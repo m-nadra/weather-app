@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pl-PL">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikacja pogodowa</title>
+    <script>
+        const miasta = {
+            "Lublin": {
+                lat: 51.25,
+                lon: 22.5667
+            },
+            "Warszawa": {
+                lat: 52.2297,
+                lon: 21.0122
+            },
+            "Londyn": {
+                lat: 51.5074,
+                lon: -0.1278
+            },
+            "Nowy Jork": {
+                lat: 40.7128,
+                lon: -74.0060
+            },
+        }
+
+        function getWeather(e){
+            e.preventDefault();
+            const miastoVal = document.forms["form"]["miasto"].value;
+            const miasto = miasta[miastoVal];
+            fetch(`https://api.open-meteo.com/v1/forecast?latitude=${miasto.lat}&longitude=${miasto.lon}&current=temperature_2m,wind_speed_10m&timezone=auto&past_days=0&forecast_days=7`)
+                .then(response => response.json())
+                .then(data => {
+                    const temperatura = data.current.temperature_2m;
+                    const predkosc_wiatru = data.current.wind_speed_10m;
+                    const godzina_pomiaru = new Date(data.current.time).toLocaleTimeString('default', { hour: '2-digit', minute: '2-digit' });
+                    document.getElementById("pogoda").innerHTML = `Wybrano: <b>${miastoVal}</b> <br> Temperatura: ${temperatura}°C <br> Prędkość wiatru: ${predkosc_wiatru} km/h <br><br> <i>Lokalna godzina pomiaru: ${godzina_pomiaru}</i>`;
+                })
+                .catch(error => console.error(error));
+        }
+    </script>
+</head>
+<body>
+    <form onsubmit="getWeather(event)" name="form">
+        <label for="miasto">Wybierz miasto</label>
+        <select name="miasto" required>
+            <option value="Lublin">Lublin</option>
+            <option value="Warszawa">Warszawa</option>
+            <option value="Londyn">Londyn</option>
+            <option value="Nowy Jork">Nowy Jork</option>
+        </select>
+        <input type="submit" value="Sprawdź">
+    </form>
+    <p id="pogoda"></p>
+</body>
+</html>
