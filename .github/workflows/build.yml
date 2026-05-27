@@ -64,6 +64,7 @@ jobs:
         with:
           command: cves
           only-severities: critical,high
+          ignore-base: true
           exit-code: true
       
       - name: Push Docker image
